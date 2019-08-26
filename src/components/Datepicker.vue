@@ -22,6 +22,7 @@
       :required="required"
       :bootstrapStyling="bootstrapStyling"
       :use-utc="useUtc"
+      :input-mask="inputMask"
       @showCalendar="showCalendar"
       @closeCalendar="close"
       @typedDate="setTypedDate"
@@ -130,6 +131,7 @@ export default {
     disabledDates: Object,
     highlighted: Object,
     placeholder: String,
+    inputMask: String,
     inline: Boolean,
     calendarClass: [String, Object, Array],
     inputClass: [String, Object, Array],
