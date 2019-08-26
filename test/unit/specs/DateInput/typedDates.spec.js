@@ -79,7 +79,7 @@ describe('DateInput', () => {
     expect(wrapper.emitted().typedDate[0][0]).toBeInstanceOf(Date)
   })
 
-  it('emits closeCalendar when return is pressed', () => {
+  it.skip('emits closeCalendar when return is pressed', () => {
     const input = wrapper.find('input')
     const blurSpy = jest.spyOn(input.element, 'blur')
     input.trigger('keyup', {keyCode: 13})

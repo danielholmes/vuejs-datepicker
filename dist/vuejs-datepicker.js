@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.vuejsDatepicker = factory());
-}(this, function () { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('vue-the-mask')) :
+  typeof define === 'function' && define.amd ? define(['vue-the-mask'], factory) :
+  (global = global || self, global.vuejsDatepicker = factory(global.vueTheMask));
+}(this, function (vueTheMask) { 'use strict';
 
   function _typeof(obj) {
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -55,20 +55,35 @@
     return obj;
   }
 
-  function _objectSpread(target) {
+  function ownKeys(object, enumerableOnly) {
+    var keys = Object.keys(object);
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(object);
+      if (enumerableOnly) symbols = symbols.filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+      });
+      keys.push.apply(keys, symbols);
+    }
+
+    return keys;
+  }
+
+  function _objectSpread2(target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i] != null ? arguments[i] : {};
-      var ownKeys = Object.keys(source);
 
-      if (typeof Object.getOwnPropertySymbols === 'function') {
-        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-        }));
+      if (i % 2) {
+        ownKeys(source, true).forEach(function (key) {
+          _defineProperty(target, key, source[key]);
+        });
+      } else if (Object.getOwnPropertyDescriptors) {
+        Object.defineProperties(target, Object.getOwnPropertyDescriptors(source));
+      } else {
+        ownKeys(source).forEach(function (key) {
+          Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+        });
       }
-
-      ownKeys.forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
     }
 
     return target;
@@ -393,14 +408,17 @@
     }
   };
   var makeDateUtils = function makeDateUtils(useUtc) {
-    return _objectSpread({}, utils, {
+    return _objectSpread2({}, utils, {
       useUtc: useUtc
     });
   };
-  var utils$1 = _objectSpread({}, utils) // eslint-disable-next-line
+  var utils$1 = _objectSpread2({}, utils) // eslint-disable-next-line
   ;
 
   var script = {
+    directives: {
+      mask: vueTheMask.mask
+    },
     props: {
       selectedDate: Date,
       resetTypedDate: [Date],
@@ -410,6 +428,7 @@
       id: String,
       name: String,
       refName: String,
+      inputMask: String,
       openDate: Date,
       placeholder: String,
       inputClass: [String, Object, Array],
@@ -450,7 +469,7 @@
             return [this.inputClass, 'form-control'].join(' ');
           }
 
-          return _objectSpread({
+          return _objectSpread2({
             'form-control': true
           }, this.inputClass);
         }
@@ -686,28 +705,59 @@
             )
           : _vm._e(),
         _vm._v(" "),
-        _c("input", {
-          ref: _vm.refName,
-          class: _vm.computedInputClass,
-          attrs: {
-            type: _vm.inline ? "hidden" : "text",
-            name: _vm.name,
-            id: _vm.id,
-            "open-date": _vm.openDate,
-            placeholder: _vm.placeholder,
-            "clear-button": _vm.clearButton,
-            disabled: _vm.disabled,
-            required: _vm.required,
-            readonly: !_vm.typeable,
-            autocomplete: "off"
-          },
-          domProps: { value: _vm.formattedValue },
-          on: {
-            click: _vm.showCalendar,
-            keyup: _vm.parseTypedDate,
-            blur: _vm.inputBlurred
-          }
-        }),
+        _vm.inputMask
+          ? _c("input", {
+              directives: [
+                {
+                  name: "mask",
+                  rawName: "v-mask",
+                  value: _vm.inputMask,
+                  expression: "inputMask"
+                }
+              ],
+              ref: _vm.refName,
+              class: _vm.computedInputClass,
+              attrs: {
+                type: _vm.inline ? "hidden" : "text",
+                name: _vm.name,
+                id: _vm.id,
+                "open-date": _vm.openDate,
+                placeholder: _vm.placeholder,
+                "clear-button": _vm.clearButton,
+                disabled: _vm.disabled,
+                required: _vm.required,
+                readonly: !_vm.typeable,
+                autocomplete: "off"
+              },
+              domProps: { value: _vm.formattedValue },
+              on: {
+                click: _vm.showCalendar,
+                keyup: _vm.parseTypedDate,
+                blur: _vm.inputBlurred
+              }
+            })
+          : _c("input", {
+              ref: _vm.refName,
+              class: _vm.computedInputClass,
+              attrs: {
+                type: _vm.inline ? "hidden" : "text",
+                name: _vm.name,
+                id: _vm.id,
+                "open-date": _vm.openDate,
+                placeholder: _vm.placeholder,
+                "clear-button": _vm.clearButton,
+                disabled: _vm.disabled,
+                required: _vm.required,
+                readonly: !_vm.typeable,
+                autocomplete: "off"
+              },
+              domProps: { value: _vm.formattedValue },
+              on: {
+                click: _vm.showCalendar,
+                keyup: _vm.parseTypedDate,
+                blur: _vm.inputBlurred
+              }
+            }),
         _vm._v(" "),
         _vm.clearButton && _vm.selectedDate
           ? _c(
@@ -726,30 +776,24 @@
                   "span",
                   { class: { "input-group-text": _vm.bootstrapStyling } },
                   [
-                    _c("i", { class: _vm.clearButtonIcon }, [
-                      !_vm.clearButtonIcon
-                        ? _c("span", [
-                            _c(
-                              "svg",
-                              {
-                                attrs: {
-                                  xmlns: "http://www.w3.org/2000/svg",
-                                  width: "10",
-                                  height: "10"
-                                }
-                              },
-                              [
-                                _c("path", {
-                                  attrs: {
-                                    d:
-                                      "M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"
-                                  }
-                                })
-                              ]
-                            )
-                          ])
-                        : _vm._e()
-                    ])
+                    _c(
+                      "svg",
+                      {
+                        attrs: {
+                          xmlns: "http://www.w3.org/2000/svg",
+                          width: "10",
+                          height: "10"
+                        }
+                      },
+                      [
+                        _c("path", {
+                          attrs: {
+                            d:
+                              "M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"
+                          }
+                        })
+                      ]
+                    )
                   ]
                 )
               ]
@@ -2279,7 +2323,7 @@
       return addStyle(id, style);
     };
   }
-  var HEAD = document.head || document.getElementsByTagName('head')[0];
+  var HEAD;
   var styles = {};
 
   function addStyle(id, css) {
@@ -2305,6 +2349,11 @@
         style.element = document.createElement('style');
         style.element.type = 'text/css';
         if (css.media) style.element.setAttribute('media', css.media);
+
+        if (HEAD === undefined) {
+          HEAD = document.head || document.getElementsByTagName('head')[0];
+        }
+
         HEAD.appendChild(style.element);
       }
 
