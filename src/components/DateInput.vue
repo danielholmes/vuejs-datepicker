@@ -50,7 +50,7 @@
     <!-- Clear Button -->
     <span v-if="clearButton && selectedDate" class="vdp-datepicker__clear-button" :class="{'input-group-append' : bootstrapStyling}" @click="clearDate()">
       <span :class="{'input-group-text' : bootstrapStyling}">
-        <slot name="clearButton" slot="clearButton">
+        <slot name="clearButton">
           <i :class="clearButtonIcon">
             <span v-if="!clearButtonIcon">&times;</span>
           </i>
@@ -154,11 +154,9 @@ export default {
         this.input.blur()
       }
 
-      console.log('parseTypedDate', this.typeable)
       if (this.typeable) {
         var parseableDate = this.parseableDate(this.input.value, this.format)
         var parsedDate = parseDate(parseableDate, this.format)
-        console.log('parsedDate', parsedDate, parseableDate, this.format)
         if (!isNaN(parsedDate)) {
           this.typedDate = this.input.value
           this.$emit('typedDate', new Date(parsedDate))

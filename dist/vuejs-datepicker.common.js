@@ -509,12 +509,9 @@ var script = {
         this.input.blur();
       }
 
-      console.log('parseTypedDate', this.typeable);
-
       if (this.typeable) {
         var parseableDate = this.parseableDate(this.input.value, this.format);
         var parsedDate = parseDate(parseableDate, this.format);
-        console.log('parsedDate', parsedDate, parseableDate, this.format);
 
         if (!isNaN(parsedDate)) {
           this.typedDate = this.input.value;
@@ -789,17 +786,13 @@ var __vue_render__ = function() {
                 "span",
                 { class: { "input-group-text": _vm.bootstrapStyling } },
                 [
-                  _vm._t(
-                    "clearButton",
-                    [
-                      _c("i", { class: _vm.clearButtonIcon }, [
-                        !_vm.clearButtonIcon
-                          ? _c("span", [_vm._v("×")])
-                          : _vm._e()
-                      ])
-                    ],
-                    { slot: "clearButton" }
-                  )
+                  _vm._t("clearButton", [
+                    _c("i", { class: _vm.clearButtonIcon }, [
+                      !_vm.clearButtonIcon
+                        ? _c("span", [_vm._v("×")])
+                        : _vm._e()
+                    ])
+                  ])
                 ],
                 2
               )
