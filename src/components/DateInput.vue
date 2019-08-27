@@ -50,7 +50,11 @@
     <!-- Clear Button -->
     <span v-if="clearButton && selectedDate" class="vdp-datepicker__clear-button" :class="{'input-group-append' : bootstrapStyling}" @click="clearDate()">
       <span :class="{'input-group-text' : bootstrapStyling}">
-        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><path d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"></path></svg>
+        <slot name="clearButton" slot="clearButton">
+          <i :class="clearButtonIcon">
+            <span v-if="!clearButtonIcon">&times;</span>
+          </i>
+        </slot>
       </span>
     </span>
     <slot name="afterDateInput"></slot>
@@ -59,6 +63,15 @@
 <script>
 import { makeDateUtils } from '../utils/DateUtils'
 import {mask} from 'vue-the-mask'
+import dateAndTime from 'date-and-time'
+
+function parseDate (input, format) {
+  if (typeof format === 'function') {
+    return format(input)
+  }
+  const transformedFormat = format.toUpperCase()
+  return dateAndTime.parse(input, transformedFormat)
+}
 
 export default {
   directives: {
@@ -141,9 +154,11 @@ export default {
         this.input.blur()
       }
 
+      console.log('parseTypedDate', this.typeable)
       if (this.typeable) {
         var parseableDate = this.parseableDate(this.input.value, this.format)
-        var parsedDate = Date.parse(parseableDate)
+        var parsedDate = parseDate(parseableDate, this.format)
+        console.log('parsedDate', parsedDate, parseableDate, this.format)
         if (!isNaN(parsedDate)) {
           this.typedDate = this.input.value
           this.$emit('typedDate', new Date(parsedDate))
@@ -156,7 +171,7 @@ export default {
      */
     inputBlurred () {
       var parseableDate = this.parseableDate(this.input.value, this.format)
-      if (isNaN(Date.parse(parseableDate))) {
+      if (isNaN(parseDate(parseableDate, this.format))) {
         this.clearDate()
         this.input.value = null
         this.typedDate = null
@@ -199,7 +214,7 @@ export default {
       var timezone = new Date().toString().split(' ')
       dat = ymd.join('-') + 'T00:00:00' + timezone[5].substr(3, 5)  //  include timezone to avoid wrong dates after parse
 
-      if (isNaN(Date.parse(dat))) {
+      if (isNaN(parseDate(dat, this.format))) {
         return datestr
       }
 
